@@ -1,0 +1,34 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="E501" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N803" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="requests_html" />
+          <option value="SNKRS.snkrs.discord_webhook" />
+          <option value="discord_webhook" />
+          <option value="DiscordEmbed" />
+          <option value="DiscordWebhook" />
+          <option value="bytes.element_to_be_clickable" />
+          <option value="bytes.frame_to_be_available_and_switch_to_it" />
+          <option value="selenium.webdriver.chrome.webdriver.WebDriver.switch_to_frame" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
