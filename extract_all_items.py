@@ -33,9 +33,9 @@ def sold_products(user_sold_products):
     """
     item_titles_advice, ratings_advice, feedbacks_advice = [], [], []
     for product in user_sold_products:
-        item_titles_advice.append(product['name_product_sold'])
-        ratings_advice.append(product['description_product_sold'])
-        feedbacks_advice.append(product['rating_feedback'])
+        item_titles_advice.append(user_sold_products[product]['name_product_sold'])
+        ratings_advice.append(user_sold_products[product]['description_product_sold'])
+        feedbacks_advice.append(user_sold_products[product]['rating_feedback'])
     return item_titles_advice, ratings_advice, feedbacks_advice
 
 
@@ -62,15 +62,15 @@ def current_products(user_current_products):
     item_updated_date_dressing, item_brand_dressing, item_price_dressing = [], [], []
     item_image_url_dressing, item_description_dressing = [], []
     for product in user_current_products:
-        item_title_dressing.append(product['title'])
-        item_size_dressing.append(product['size'])
-        item_creation_date_dressing.append(product['creation_date'])
-        item_updated_date_dressing.append(product['updated_date'])
-        item_brand_dressing.append(product['brand'])
-        item_price_dressing.append(product['price'])
-        item_image_url_dressing.append(product['image_url'])
-        item_boosted_dressing.append(product['price'])
-        item_description_dressing.append(product['description'])
+        item_title_dressing.append(user_current_products[product]['title'])
+        item_size_dressing.append(user_current_products[product]['size'])
+        item_creation_date_dressing.append(user_current_products[product]['creation_date'])
+        item_updated_date_dressing.append(user_current_products[product]['updated_date'])
+        item_brand_dressing.append(user_current_products[product]['brand'])
+        item_price_dressing.append(user_current_products[product]['price'])
+        item_image_url_dressing.append(user_current_products[product]['image_url'])
+        item_boosted_dressing.append(user_current_products[product]['price'])
+        item_description_dressing.append(user_current_products[product]['description'])
     return item_title_dressing, item_size_dressing, item_creation_date_dressing, item_boosted_dressing, \
            item_updated_date_dressing, item_brand_dressing, item_price_dressing, \
            item_image_url_dressing, item_description_dressing
@@ -105,13 +105,22 @@ def scrapping_annonces(dataset_final, session, keyword):
             user_data = extract_user_information.extract_information_user(session, id_member)
             user_sold_products = extract_sold_products.extract_sold_products(session, member_id=id_member,
                                                                              user_data=user_data)
-            item_titles_advice, ratings_advice, feedbacks_advice = sold_products(user_sold_products)
+            if user_sold_products:
+                item_titles_advice, ratings_advice, feedbacks_advice = sold_products(user_sold_products)
+            else:
+                item_titles_advice, ratings_advice, feedbacks_advice = [None] *3
             user_current_products = extract_current_products.extract_current_product(session, member_id=id_member,
                                                                                      user_data=user_data,
                                                                                      item_id=item['id'])
-            item_title_dressing, item_size_dressing, item_creation_date_dressing, item_boosted_dressing, \
-            item_updated_date_dressing, item_brand_dressing, item_price_dressing, \
-            item_image_url_dressing, item_description_dressing = current_products(user_current_products)
+            if user_current_products is not None:
+                item_title_dressing, item_size_dressing, item_creation_date_dressing, item_boosted_dressing, \
+                item_updated_date_dressing, item_brand_dressing, item_price_dressing, \
+                item_image_url_dressing, item_description_dressing = current_products(user_current_products)
+            else:
+                # Handle the case when user_current_products is None
+                item_title_dressing, item_size_dressing, item_creation_date_dressing, item_boosted_dressing, \
+                item_updated_date_dressing, item_brand_dressing, item_price_dressing, \
+                item_image_url_dressing, item_description_dressing = [None] * 9
 
             # Construct a dictionary with the collected data
             final_data = {
@@ -161,10 +170,11 @@ def scrapping_annonces(dataset_final, session, keyword):
             }
 
             # Append the dictionary to the dataset
-            dataset_final = dataset_final.append(final_data, ignore_index=True)
+            dataset_final = pd.concat([dataset_final, pd.DataFrame([final_data])], ignore_index=True)
 
     except Exception as e:
         print(f"An error occurred while scraping announcements: {e}")
+    return dataset_final
 
 
 # Main function to execute the scraping process
@@ -179,7 +189,7 @@ if __name__ == '__main__':
     dataset_final = pd.DataFrame(columns=column_names)
 
     # Execute the scraping function
-    scrapping_annonces(dataset_final, session, keyword)
+    dataset_final = scrapping_annonces(dataset_final, session, keyword)
 
     # Save the final dataset to a CSV file
     dataset_final.to_csv('dataset_final.csv')

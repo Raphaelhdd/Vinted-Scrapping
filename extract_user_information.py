@@ -1,4 +1,6 @@
 import json
+import traceback
+
 import extract_token
 
 def extract_information_user(session, member_id):
@@ -23,34 +25,45 @@ def extract_information_user(session, member_id):
         json_data = json.loads(request_session.text)
 
         # Extract user information
-        mail_member = json_data['user'].get('email', 'N/A')
-        gender = json_data['user'].get('gender', 'N/A')
-        name_member = json_data['user'].get('login', 'N/A')
-        item_count = json_data['user'].get('item_count', 'N/A')
-        followers = json_data['user'].get('followers_count', 'N/A')
-        follows = json_data['user'].get('following_count', 'N/A')
-        feedback_count = json_data['user'].get('feedback_count', 'N/A')
-        positive_feedback = json_data['user'].get('positive_feedback_count', 'N/A')
-        negative_feedback = json_data['user'].get('negative_feedback_count', 'N/A')
-        neutral_feedback = json_data['user'].get('neutral_feedback_count', 'N/A')
-        meeting_transaction = json_data['user'].get('meeting_transaction_count', 'N/A')
-        photo = json_data['user']['photo'].get('url', 'N/A')
-        business_account = json_data['user'].get('business_account', 'N/A')
-        account_ban_date = json_data['user'].get('account_ban_date', 'N/A')
-        is_account_ban_permanent = json_data['user'].get('is_account_ban_permanent', 'N/A')
-        is_publish_photos_agreed = json_data['user'].get('is_publish_photos_agreed', 'N/A')
-        expose_location = json_data['user'].get('expose_location', 'N/A')
-        city = json_data['user'].get('city', 'N/A')
-        country_title = json_data['user'].get('country_title', 'N/A')
-        is_hated = json_data['user'].get('is_hated', 'N/A')
-        hates_you = json_data['user'].get('hates_you', 'N/A')
-        view_profile = json_data['user'].get('can_view_profile', 'N/A')
+        mail_member = json_data['user']['email'] if 'email' in json_data['user'] else 'N/A'
+        gender = json_data['user']['gender'] if 'gender' in json_data['user'] else 'N/A'
+        name_member = json_data['user']['login'] if 'login' in json_data['user'] else 'N/A'
+        item_count = json_data['user']['item_count'] if 'item_count' in json_data['user'] else 'N/A'
+        followers = json_data['user']['followers_count'] if 'followers_count' in json_data['user'] else 'N/A'
+        follows = json_data['user']['following_count'] if 'following_count' in json_data['user'] else 'N/A'
+        feedback_count = json_data['user']['feedback_count'] if 'feedback_count' in json_data['user'] else 'N/A'
+        positive_feedback = json_data['user']['positive_feedback_count'] if 'positive_feedback_count' in json_data[
+            'user'] else 'N/A'
+        negative_feedback = json_data['user']['negative_feedback_count'] if 'negative_feedback_count' in json_data[
+            'user'] else 'N/A'
+        neutral_feedback = json_data['user']['neutral_feedback_count'] if 'neutral_feedback_count' in json_data[
+            'user'] else 'N/A'
+        meeting_transaction = json_data['user']['meeting_transaction_count'] if 'meeting_transaction_count' in \
+                                                                                 json_data['user'] else 'N/A'
+        user_photo = json_data['user'].get('photo', None)
+        photo = user_photo['url'] if user_photo and 'url' in user_photo else 'N/A'
+        business_account = json_data['user']['business_account'] if 'business_account' in json_data['user'] else 'N/A'
+        account_ban_date = json_data['user']['account_ban_date'] if 'account_ban_date' in json_data['user'] else 'N/A'
+        is_account_ban_permanent = json_data['user']['is_account_ban_permanent'] if 'is_account_ban_permanent' in \
+                                                                                    json_data['user'] else 'N/A'
+        is_publish_photos_agreed = json_data['user']['is_publish_photos_agreed'] if 'is_publish_photos_agreed' in \
+                                                                                    json_data['user'] else 'N/A'
+        expose_location = json_data['user']['expose_location'] if 'expose_location' in json_data['user'] else 'N/A'
+        city = json_data['user']['city'] if 'city' in json_data['user'] else 'N/A'
+        country_title = json_data['user']['country_title'] if 'country_title' in json_data['user'] else 'N/A'
+        is_hated = json_data['user']['is_hated'] if 'is_hated' in json_data['user'] else 'N/A'
+        hates_you = json_data['user']['hates_you'] if 'hates_you' in json_data['user'] else 'N/A'
+        view_profile = json_data['user']['can_view_profile'] if 'can_view_profile' in json_data['user'] else 'N/A'
 
         # Verification details
-        verification_mail = json_data['user']['verification']['email'].get('valid', 'N/A')
-        verification_facebook = json_data['user']['verification']['facebook'].get('valid', 'N/A')
-        verification_google = json_data['user']['verification']['google'].get('valid', 'N/A')
-        verification_phone = json_data['user']['verification']['phone'].get('valid', 'N/A')
+        verification_mail = json_data['user']['verification']['email']['valid'] if 'verification' in json_data[
+            'user'] and 'email' in json_data['user']['verification'] else 'N/A'
+        verification_facebook = json_data['user']['verification']['facebook']['valid'] if 'verification' in json_data[
+            'user'] and 'facebook' in json_data['user']['verification'] else 'N/A'
+        verification_google = json_data['user']['verification']['google']['valid'] if 'verification' in json_data[
+            'user'] and 'google' in json_data['user']['verification'] else 'N/A'
+        verification_phone = json_data['user']['verification']['phone']['valid'] if 'verification' in json_data[
+            'user'] and 'phone' in json_data['user']['verification'] else 'N/A'
 
         # Print or process the extracted information
         user_data = {
@@ -83,7 +96,12 @@ def extract_information_user(session, member_id):
         }
 
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred in user: {e}")
+        print("Traceback:")
+        traceback.print_exc()
+
+        # Print the values of relevant variables
+        # ... (print other relevant variables)
         user_data = None
 
     return user_data

@@ -74,7 +74,7 @@ def extract_current_product(session, member_id = None, user_data = None,item_id=
             return None
 
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred in current: {e}")
         return None
 
 

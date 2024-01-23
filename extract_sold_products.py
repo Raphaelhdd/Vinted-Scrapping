@@ -59,7 +59,7 @@ def extract_sold_products(session, member_id = None ,user_data = None):
             return None
 
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred in sold: {e}")
         return None
 
 
