@@ -4,7 +4,7 @@ import json
 import time
 
 
-def extract_sold_products(session, member_id):
+def extract_sold_products(session, member_id = None ,user_data = None):
     """
     Extracts information about products sold with feedback for a Vinted user.
 
@@ -17,10 +17,11 @@ def extract_sold_products(session, member_id):
     """
     try:
         # Extract user information to get feedback count
-        user_data = extract_user_information.extract_information_user(session, member_id)
+        if not user_data :
+            user_data = extract_user_information.extract_information_user(session, member_id)
 
         # Check if the user has feedback
-        if user_data['feedback_count'] > 0:
+        if user_data['feedback_count'] > 0 and member_id:
             # Build API endpoint to fetch user feedbacks
             api_sold_products = f"https://www.vinted.fr/api/v2/user_feedbacks?user_id={member_id}&page=1&per_page=" \
                                 f"{user_data['feedback_count']}&by=all"
@@ -39,8 +40,8 @@ def extract_sold_products(session, member_id):
 
                 # Store feedback information in a dictionary
                 feedback_data = {
-                    'feedback_item_sold': feedback_item_sold,
-                    'feedback_description': feedback_description,
+                    'name_product_sold': feedback_item_sold,
+                    'description_product_sold': feedback_description,
                     'rating_feedback': rating_feedback
                 }
 

@@ -4,7 +4,7 @@ import json
 import time
 
 
-def extract_current_product(session, member_id):
+def extract_current_product(session, member_id = None, user_data = None,item_id=None):
     """
     Extracts information about the current products listed by a Vinted user.
 
@@ -17,10 +17,11 @@ def extract_current_product(session, member_id):
     """
     try:
         # Extract user information to get the total number of items
-        user_data = extract_user_information.extract_information_user(session, member_id)
+        if not user_data :
+            user_data = extract_user_information.extract_information_user(session, member_id)
 
         # Check if the user has listed any products
-        if user_data['items_count'] > 0:
+        if user_data['items_count'] > 0 and member_id:
             # Build API endpoint to fetch user's current products
             api_dressing = f"https://www.vinted.fr/api/v2/users/{member_id}/items?page=1&per_page={user_data['items_count']}&order=relevance"
 
@@ -35,32 +36,35 @@ def extract_current_product(session, member_id):
             # Iterate through each item
             for item in json_data_dressing["items"]:
                 product_id = item.get('id', 'N/A')
-                product_title = item.get('title', 'N/A')
-                product_size = item.get('size', 'N/A')
-                product_creation_date = item.get('created_at_ts', 'N/A')
-                product_updated_date = item.get('description', 'N/A')
-                product_brand = item.get('brand', 'N/A')
-                product_price = item.get('original_price_numeric', 'N/A')
-                product_img = item['photos'][0]['url'] if 'photos' in item and item['photos'] else 'N/A'
-                product_boosted = item.get('promoted_internationally', 'N/A')
+                if item_id and product_id != item_id:
+                    product_title = item.get('title', 'N/A')
+                    product_size = item.get('size', 'N/A')
+                    product_creation_date = item.get('created_at_ts', 'N/A')
+                    product_updated_date = item.get('description', 'N/A')
+                    product_brand = item.get('brand', 'N/A')
+                    product_price = item.get('original_price_numeric', 'N/A')
+                    product_img = item['photos'][0]['url'] if 'photos' in item and item['photos'] else 'N/A'
+                    product_boosted = item.get('promoted_internationally', 'N/A')
+                    product_description = item.get('description', 'N/A')
 
-                # Store item information in a dictionary
-                item_data = {
-                    'title': product_title,
-                    'size': product_size,
-                    'creation_date': product_creation_date,
-                    'updated_date': product_updated_date,
-                    'brand': product_brand,
-                    'price': product_price,
-                    'image_url': product_img,
-                    'boosted': product_boosted
-                }
+                    # Store item information in a dictionary
+                    item_data = {
+                        'title': product_title,
+                        'size': product_size,
+                        'creation_date': product_creation_date,
+                        'updated_date': product_updated_date,
+                        'brand': product_brand,
+                        'price': product_price,
+                        'image_url': product_img,
+                        'boosted': product_boosted,
+                        'description' : product_description
+                    }
 
-                # Add item information to the overall dictionary
-                all_items[product_id] = item_data
+                    # Add item information to the overall dictionary
+                    all_items[product_id] = item_data
 
-                # Pause for 1 second to avoid rate limiting
-                time.sleep(1)
+                    # Pause for 1 second to avoid rate limiting
+                    time.sleep(1)
 
             # Return the dictionary containing all item information
             return all_items
